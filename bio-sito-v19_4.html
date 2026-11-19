@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>diggiaz — Dev</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f5f3;
+    --text: #0d0d0d;
+    --muted: #8a8a8a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Inter", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  nav {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .nav-left { display: flex; align-items: center; gap: 1rem; }
+  .logo { font-weight: 800; font-size: 1.2rem; color: var(--text); text-decoration: none; }
+  .logo span { font-weight: 400; }
+
+  /* LANGUAGE MENU */
+  .lang { position: relative; }
+  .lang-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: #fff;
+    border: 1px solid #e4e4e0;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 0.4rem 0.75rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .lang-btn:hover { border-color: #c9c9c4; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+  .lang-btn .caret { font-size: 0.65rem; color: var(--muted); transition: transform 0.2s; }
+  .lang.open .lang-btn .caret { transform: rotate(180deg); }
+  .lang-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 0.4rem);
+    left: 0;
+    min-width: 150px;
+    list-style: none;
+    background: #fff;
+    border: 1px solid #e4e4e0;
+    border-radius: 14px;
+    padding: 0.35rem;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+  }
+  .lang.open .lang-menu { display: block; }
+  .lang-menu button {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    background: none;
+    border: 0;
+    font-family: inherit;
+    font-size: 0.9rem;
+    color: #333;
+    text-align: left;
+    padding: 0.55rem 0.7rem;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  .lang-menu button:hover { background: #f1f1ee; }
+  .lang-menu button[aria-current="true"] { font-weight: 700; color: var(--text); }
+  .lang-menu button[aria-current="true"]::after { content: "✓"; }
+
+  .nav-links { display: flex; gap: 2rem; align-items: center; }
+  .nav-links a { color: #555; text-decoration: none; font-size: 0.95rem; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--text); }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--text);
+    color: #fff;
+    text-decoration: none;
+    padding: 0.75rem 1.4rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: transform 0.2s, opacity 0.2s;
+  }
+  .nav-links a.pill { color: #ffffff; font-weight: 700; }
+  .nav-links a.pill:hover { color: #ffffff; }
+  .pill:hover { transform: translateY(-1px); opacity: 0.9; }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    text-align: center;
+    min-height: 82vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.5rem 5rem;
+    overflow: hidden;
+  }
+  #bands {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .hero > *:not(#bands) { position: relative; z-index: 1; }
+  .eyebrow {
+    font-size: 0.8rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  h1 {
+    margin-top: 1.2rem;
+    font-size: clamp(3.5rem, 10vw, 7.5rem);
+    font-weight: 700;
+    letter-spacing: -0.045em;
+    line-height: 0.95;
+  }
+  h1 .soft { color: #b0b0b0; font-weight: 600; display: block; }
+  h1 .dot { color: var(--text); }
+  .lead {
+    margin: 1.6rem auto 0;
+    max-width: 340px;
+    color: rgba(107, 107, 107, 0.7);
+    font-size: 0.9rem;
+    line-height: 1.6;
+    background: var(--bg);
+    padding: 0.3rem 0.6rem;
+    border-radius: 8px;
+  }
+  .lead strong { color: #0d0d0d; font-weight: 700; }
+  .cta-wrap { position: relative; margin-top: 2.2rem; }
+  .cta-wrap::after {
+    content: "";
+    position: absolute;
+    left: 15%;
+    right: 15%;
+    bottom: -18px;
+    height: 26px;
+    border-radius: 50%;
+    background: linear-gradient(90deg, #7ee8c7, #c6a6ff, #ffb3d1, #ffd98a);
+    filter: blur(14px);
+    opacity: 0.8;
+    z-index: -1;
+  }
+  .cta-wrap .pill { padding: 0.95rem 2rem; font-size: 1rem; }
+
+  section.block { max-width: 1100px; margin: 0 auto; padding: 5rem 1.5rem; }
+  .section-label {
+    font-size: 0.8rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: 2.5rem;
+  }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; }
+  .card {
+    background: #fff;
+    border: 1px solid #e4e4e0;
+    border-radius: 20px;
+    padding: 2rem;
+    transition: transform 0.25s, box-shadow 0.25s;
+  }
+  .card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.06); }
+  .card .tag { font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  .card h3 { font-size: 1.5rem; margin: 0.8rem 0 0.6rem; letter-spacing: -0.02em; }
+  .card p { color: #666; font-size: 0.95rem; line-height: 1.6; }
+
+  .mod-details { margin-top: 1rem; }
+  .mod-details summary {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    list-style: none;
+  }
+  .mod-details summary::-webkit-details-marker { display: none; }
+  .mod-details summary::after { content: " +"; color: var(--muted); }
+  .mod-details[open] summary::after { content: " −"; }
+  .mod-desc { margin-top: 0.8rem; color: #555; font-size: 0.9rem; line-height: 1.6; }
+  .btn-download {
+    display: inline-block;
+    margin-top: 1rem;
+    background: var(--text);
+    color: #fff;
+    text-decoration: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  footer {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 4rem;
+    border-top: 1px solid #e4e4e0;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  footer a { color: var(--text); text-decoration: none; }
+
+  @media (max-width: 720px) {
+    .nav-links a:not(.pill) { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <a class="logo" href="#">✳ diggiaz<span>.</span></a>
+
+    <!-- Language menu -->
+    <div class="lang" id="lang">
+      <button class="lang-btn" id="langBtn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Lingua / Language">
+        <span id="langCurrent">IT</span><span class="caret">▾</span>
+      </button>
+      <ul class="lang-menu" id="langMenu" role="listbox">
+        <li><button type="button" data-lang="it">Italiano</button></li>
+        <li><button type="button" data-lang="en">English</button></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="nav-links">
+    <a href="#progetti" data-i18n="nav_projects">Progetti</a>
+    <a class="pill" href="https://discord.com/users/1117049020418887710" target="_blank" rel="noopener">Discord ↗</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <canvas id="bands"></canvas>
+  <p class="eyebrow">Minecraft • Discord<br>Dev</p>
+  <h1>
+    <span class="soft">Hey, I'm</span>
+    diggiaz<span class="dot">.</span>
+  </h1>
+  <p class="lead" data-i18n-html="lead">Ciao, sono <strong>diggiaz</strong>, ho 15 anni e sto cercando di diventare un dev.</p>
+  <div class="cta-wrap">
+    <a class="pill" href="#progetti" data-i18n="cta">Esplora i progetti ↗</a>
+  </div>
+</header>
+
+<section class="block" id="progetti">
+  <p class="section-label" data-i18n="section_label">Cosa faccio</p>
+  <div class="grid">
+    <div class="card">
+      <span class="tag">Minecraft</span>
+      <h3 data-i18n="mod_title">Mod</h3>
+      <p data-i18n="mod_text">Contenuti personalizzati, nuove meccaniche e funzionalità create per giocatori e server.</p>
+      <details class="mod-details">
+        <summary>MarketPlugin v3 — Beta</summary>
+        <p class="mod-desc" data-i18n-html="mod_desc">
+          Un plugin per Paper 1.21.x, senza dipendenze esterne: economia, shop, mercato e statistiche.
+          <br><br>
+          <strong>Shop (/shop):</strong> menu a reparti in stile DonutSMP. Reparto <strong>Blocchi</strong> (tronchi, assi, cobblestone, pietra, mattoni, vetro e altro) e reparto <strong>PvP</strong> (pozioni di resistenza al fuoco, velocità II e forza II, ossidiana, cristallo dell'End). Puoi comprare in quantità con i pulsanti +/−.
+          <br><br>
+          <strong>Mercato (/ah):</strong> metti in vendita l'oggetto in mano con <code>/ah sell &lt;prezzo&gt;</code>. Gli altri giocatori lo comprano dal menu. Su ogni vendita il server trattiene il 2% di tassa, e il venditore riceve un messaggio con il dettaglio anche se è offline.
+          <br><br>
+          <strong>Pagamenti:</strong> <code>/pay &lt;giocatore&gt; &lt;quantità&gt;</code> per mandare soldi a un altro giocatore, anche se è offline. Nessuna tassa.
+          <br><br>
+          <strong>Altri comandi:</strong> /balance (saldo), /sell (vende l'oggetto in mano), /shop value (valore dell'oggetto in mano).
+          <br><br>
+          <strong>Sidebar:</strong> tempo di gioco, kill, morti e soldi, aggiornati ogni secondo.
+          <br><br>
+          <em>Il plugin è ancora in beta: i bug sono previsti. Se trovi un problema, scrivimi su Discord.</em>
+        </p>
+        <a class="btn-download" href="MarketPlugin_v3.zip" download data-i18n="download">Scarica MarketPlugin_v3.zip</a>
+      </details>
+    </div>
+    <div class="card">
+      <span class="tag">Discord</span>
+      <h3 data-i18n="bot_title">Bot</h3>
+      <p data-i18n="bot_text">Bot utili e divertenti per moderazione, comandi personalizzati e community più vive.</p>
+    </div>
+  </div>
+</section>
+
+
+<footer id="contatti">
+  <span>© diggiaz</span>
+  <a href="https://discord.com/users/1117049020418887710" target="_blank" rel="noopener" data-i18n="dm">Scrivimi in DM ↗</a>
+</footer>
+
+<script>
+  // ===== Translations =====
+  const I18N = {
+    it: {
+      nav_projects: "Progetti",
+      lead: "Ciao, sono <strong>diggiaz</strong>, ho 15 anni e sto cercando di diventare un dev.",
+      cta: "Esplora i progetti ↗",
+      section_label: "Cosa faccio",
+      mod_title: "Mod",
+      mod_text: "Contenuti personalizzati, nuove meccaniche e funzionalità create per giocatori e server.",
+      mod_desc:
+        "Un plugin per Paper 1.21.x, senza dipendenze esterne: economia, shop, mercato e statistiche." +
+        "<br><br>" +
+        "<strong>Shop (/shop):</strong> menu a reparti in stile DonutSMP. Reparto <strong>Blocchi</strong> (tronchi, assi, cobblestone, pietra, mattoni, vetro e altro) e reparto <strong>PvP</strong> (pozioni di resistenza al fuoco, velocità II e forza II, ossidiana, cristallo dell'End). Puoi comprare in quantità con i pulsanti +/−." +
+        "<br><br>" +
+        "<strong>Mercato (/ah):</strong> metti in vendita l'oggetto in mano con <code>/ah sell &lt;prezzo&gt;</code>. Gli altri giocatori lo comprano dal menu. Su ogni vendita il server trattiene il 2% di tassa, e il venditore riceve un messaggio con il dettaglio anche se è offline." +
+        "<br><br>" +
+        "<strong>Pagamenti:</strong> <code>/pay &lt;giocatore&gt; &lt;quantità&gt;</code> per mandare soldi a un altro giocatore, anche se è offline. Nessuna tassa." +
+        "<br><br>" +
+        "<strong>Altri comandi:</strong> /balance (saldo), /sell (vende l'oggetto in mano), /shop value (valore dell'oggetto in mano)." +
+        "<br><br>" +
+        "<strong>Sidebar:</strong> tempo di gioco, kill, morti e soldi, aggiornati ogni secondo." +
+        "<br><br>" +
+        "<em>Il plugin è ancora in beta: i bug sono previsti. Se trovi un problema, scrivimi su Discord.</em>",
+            download: "Scarica MarketPlugin_v3.zip",
+      bot_title: "Bot",
+      bot_text: "Bot utili e divertenti per moderazione, comandi personalizzati e community più vive.",
+      dm: "Scrivimi in DM ↗"
+    },
+    en: {
+      nav_projects: "Projects",
+      lead: "Hi, I'm <strong>diggiaz</strong>, I'm 15 years old and I'm trying to become a dev.",
+      cta: "Explore projects ↗",
+      section_label: "What I do",
+      mod_title: "Mods",
+      mod_text: "Custom content, new mechanics and features built for players and servers.",
+      mod_desc:
+        "An internal plugin for Paper 1.21.x, with no external dependencies: economy, shop, marketplace and stats." +
+        "<br><br>" +
+        "<strong>Shop (/shop):</strong> a sectioned menu in DonutSMP style. <strong>Blocks</strong> section (logs, planks, cobblestone, stone, bricks, glass and more) and <strong>PvP</strong> section (fire resistance, speed II and strength II potions, obsidian, end crystals). You can buy in bulk with the +/− buttons." +
+        "<br><br>" +
+        "<strong>Marketplace (/ah):</strong> list the item in your hand with <code>/ah sell &lt;price&gt;</code>. Other players buy it from the menu. The server keeps a 2% tax on every sale, and the seller gets a message with the details even if they are offline." +
+        "<br><br>" +
+        "<strong>Payments:</strong> <code>/pay &lt;player&gt; &lt;amount&gt;</code> sends money to another player, even if they are offline. No tax." +
+        "<br><br>" +
+        "<strong>Other commands:</strong> /balance (your balance), /sell (sells the item in your hand), /shop value (shows the value of the item in your hand)." +
+        "<br><br>" +
+        "<strong>Sidebar:</strong> shows playtime, kills, deaths and money, updated every second." +
+        "<br><br>" +
+        "<em>The plugin is still in beta: bugs are expected. If you find a problem, contact me on Discord.</em>",
+            download: "Download MarketPlugin_v3.zip",
+      bot_title: "Bots",
+      bot_text: "Useful and fun bots for moderation, custom commands and livelier communities.",
+      dm: "DM me ↗"
+    }
+  };
+
+  // ===== Language logic =====
+  (function () {
+    const root = document.documentElement;
+    const box = document.getElementById("lang");
+    const btn = document.getElementById("langBtn");
+    const current = document.getElementById("langCurrent");
+    const options = document.querySelectorAll("#langMenu button");
+
+    function getSaved() {
+      try { return localStorage.getItem("lang"); } catch (e) { return null; }
+    }
+    function save(lang) {
+      try { localStorage.setItem("lang", lang); } catch (e) {}
+    }
+
+    function setLang(lang) {
+      if (!I18N[lang]) lang = "it";
+      const dict = I18N[lang];
+      root.lang = lang;
+      current.textContent = lang.toUpperCase();
+      document.querySelectorAll("[data-i18n]").forEach(function (el) {
+        const v = dict[el.dataset.i18n];
+        if (v !== undefined) el.textContent = v;
+      });
+      document.querySelectorAll("[data-i18n-html]").forEach(function (el) {
+        const v = dict[el.dataset.i18nHtml];
+        if (v !== undefined) el.innerHTML = v;
+      });
+      options.forEach(function (o) {
+        o.setAttribute("aria-current", o.dataset.lang === lang ? "true" : "false");
+      });
+      save(lang);
+    }
+
+    function toggle(open) {
+      box.classList.toggle("open", open);
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+    }
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      toggle(!box.classList.contains("open"));
+    });
+    options.forEach(function (o) {
+      o.addEventListener("click", function () {
+        setLang(o.dataset.lang);
+        toggle(false);
+      });
+    });
+    document.addEventListener("click", function () { toggle(false); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") toggle(false); });
+
+    // Initial language: saved choice, otherwise browser language
+    const browser = (navigator.language || "it").toLowerCase().startsWith("it") ? "it" : "en";
+    setLang(getSaved() || browser);
+  })();
+
+  // Hero: wavy bands of dots on the sides
+  (function () {
+    const canvas = document.getElementById("bands");
+    const ctx = canvas.getContext("2d");
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let w, h, GAP, t = 0;
+
+    function resize() {
+      const dpr = window.devicePixelRatio || 1;
+      w = canvas.clientWidth;
+      h = canvas.clientHeight;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      GAP = Math.max(7, Math.min(11, w / 150));
+    }
+
+    function frame() {
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillStyle = "#0d0d0d";
+      ctx.beginPath();
+
+      const cols = Math.ceil(w / GAP);
+      const rows = Math.ceil(h / GAP);
+      for (let i = 0; i < cols; i++) {
+        const nx = i / cols;
+        const side = Math.abs(nx - 0.5) * 2;
+        if (side < 0.12) continue;
+        for (let j = 0; j < rows; j++) {
+          const ny = j / rows;
+          const v =
+            Math.sin(nx * 14 + t * 0.9 + ny * 3) * 0.5 +
+            Math.sin(nx * 6 - t * 0.5 + ny * 8) * 0.35 +
+            Math.cos(ny * 10 + t * 0.4) * 0.2;
+          const band = (v + 1) / 2;
+          const verticalFalloff = 1 - Math.abs(ny - 0.5) * 1.4;
+          const intensity = band * verticalFalloff * Math.min(1, (side - 0.12) * 1.6);
+          if (intensity > 0.42) {
+            const r = Math.min(GAP * 0.42, (intensity - 0.42) * 14 + 1.1);
+            const x = i * GAP + GAP / 2;
+            const y = j * GAP + GAP / 2;
+            ctx.moveTo(x + r, y);
+            ctx.arc(x, y, r, 0, Math.PI * 2);
+          }
+        }
+      }
+      ctx.fill();
+    }
+
+    function loop() {
+      frame();
+      t += 0.012;
+      requestAnimationFrame(loop);
+    }
+
+    resize();
+    window.addEventListener("resize", resize);
+    if (reduce) { frame(); } else { loop(); }
+  })();
+</script>
+</body>
+</html>
